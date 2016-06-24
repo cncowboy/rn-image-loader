@@ -27,7 +27,6 @@
   "dependencies": {
     "image-size": "^0.3.5",
     "loader-utils": "^0.2.7",
-    "react-native": "^0.27.0",
     "mime": "1.2.x"
   },
   "homepage": "https://github.com/cncowboy/rn-image-loader#readme"

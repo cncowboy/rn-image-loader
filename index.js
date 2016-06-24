@@ -7,10 +7,10 @@
 const loaderUtils = require("loader-utils");
 const mime = require("mime");
 const sizeOf = require('image-size');
+/*
 const fs = require('fs');
 const Promise = require('promise');
 const crypto = require('crypto');
-
 
 const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
   setTimeout(reject, timeout, 'fs operation timeout');
@@ -25,6 +25,7 @@ function timeoutableDenodeify(fsFunc, timeout) {
     ]);
   };
 }
+*/
 
 module.exports = function(content) {
 	this.cacheable && this.cacheable();
@@ -35,6 +36,16 @@ module.exports = function(content) {
 	}
 	var mimetype = query.mimetype || query.minetype || mime.lookup(this.resourcePath);
 
+    if(!this.emitFile) throw new Error("emitFile is required from module system");
+    var url = loaderUtils.interpolateName(this, query.name || "[hash].[ext]", {
+      context: query.context || this.options.context,
+      content: content,
+      regExp: query.regExp
+    });
+    this.emitFile(url, content);
+    return "module.exports = __webpack_public_path__ + " + JSON.stringify(url) + ";";
+} 
+/*
   var path = this.resourcePath;
 
   var pieces = path.split('/');
@@ -55,21 +66,31 @@ module.exports = function(content) {
     );
     hash_str = hash.digest('hex');
   })
- 
-
+*/ 
 
 	if(limit <= 0 || content.length < limit) {
+    /*
     const asset = {"__packager_asset":true,"fileSystemLocation":realPath,"httpServerLocation":"/assets/img","width":image.width,"height":image.height,"scales":[1],"files":[path],"hash":hash_str,"name":name,"type":fileType};
     const json = JSON.stringify(asset);
     const assetRegistryPath = 'react-native/Libraries/Image/AssetRegistry';
     const code =
       `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
 		return code;
- 
-		//return "module.exports = " + JSON.stringify("data:" + (mimetype ? mimetype + ";" : "") + "base64," + content.toString("base64"));
+    */
+    const data = {uri: "data:" + (mimetype ? mimetype + ";" : "") + "base64," + content.toString("base64"), scale: 1}
+    const json = JSON.stringify(data);
+    return "module.exports = " + json + ";";
 	} else {
-		var fileLoader = require("file-loader");
-		return fileLoader.call(this, content);
+	  if(!this.emitFile) throw new Error("emitFile is required from module system");
+    const url = loaderUtils.interpolateName(this, query.name || "[hash].[ext]", {
+      context: query.context || this.options.context,
+      content: content,
+      regExp: query.regExp
+    });
+    this.emitFile(url, content);
+    const data = {uri: __webpack_public_path__ + " + JSON.stringify(url) }
+    return "module.exports = " + JSON.stringify(data) + ";";
 	}
 }
 module.exports.raw = true;
+
