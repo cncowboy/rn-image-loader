@@ -2,13 +2,29 @@
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
 */
-var loaderUtils = require("loader-utils");
-var mime = require("mime");
-var assetReg = require('react-native/Libraries/Image/AssetRegistry');
-var sizeOf = require('image-size');
+'use strict';
+
+const loaderUtils = require("loader-utils");
+const mime = require("mime");
+const sizeOf = require('image-size');
 const fs = require('fs');
 const Promise = require('promise');
 const crypto = require('crypto');
+
+
+const createTimeoutPromise = (timeout) => new Promise((resolve, reject) => {
+  setTimeout(reject, timeout, 'fs operation timeout');
+});
+
+function timeoutableDenodeify(fsFunc, timeout) {
+  return function raceWrapper() {
+    var args = arguments;
+    return new Promise.race([
+      createTimeoutPromise(timeout),
+      Promise.denodeify(fsFunc).apply(this, args)
+    ]);
+  };
+}
 
 module.exports = function(content) {
 	this.cacheable && this.cacheable();
@@ -18,6 +34,7 @@ module.exports = function(content) {
 		limit = parseInt(query.limit, 10);
 	}
 	var mimetype = query.mimetype || query.minetype || mime.lookup(this.resourcePath);
+
   var path = this.resourcePath;
 
   var pieces = path.split('/');
@@ -38,6 +55,9 @@ module.exports = function(content) {
     );
     hash_str = hash.digest('hex');
   })
+ 
+
+
 	if(limit <= 0 || content.length < limit) {
     const asset = {"__packager_asset":true,"fileSystemLocation":realPath,"httpServerLocation":"/assets/img","width":image.width,"height":image.height,"scales":[1],"files":[path],"hash":hash_str,"name":name,"type":fileType};
     const json = JSON.stringify(asset);
@@ -45,6 +65,8 @@ module.exports = function(content) {
     const code =
       `module.exports = require(${JSON.stringify(assetRegistryPath)}).registerAsset(${json});`;
 		return code;
+ 
+		//return "module.exports = " + JSON.stringify("data:" + (mimetype ? mimetype + ";" : "") + "base64," + content.toString("base64"));
 	} else {
 		var fileLoader = require("file-loader");
 		return fileLoader.call(this, content);
