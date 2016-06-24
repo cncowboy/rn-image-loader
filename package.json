@@ -1,0 +1,24 @@
+{
+  "name": "rn-image-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cncowboy/rn-image-loader.git"
+  },
+  "keywords": [
+    "react-native",
+    "image",
+    "loader"
+  ],
+  "author": "cncowboy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cncowboy/rn-image-loader/issues"
+  },
+  "homepage": "https://github.com/cncowboy/rn-image-loader#readme"
+}
