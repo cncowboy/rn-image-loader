@@ -35,16 +35,6 @@ module.exports = function(content) {
 		limit = parseInt(query.limit, 10);
 	}
 	var mimetype = query.mimetype || query.minetype || mime.lookup(this.resourcePath);
-
-    if(!this.emitFile) throw new Error("emitFile is required from module system");
-    var url = loaderUtils.interpolateName(this, query.name || "[hash].[ext]", {
-      context: query.context || this.options.context,
-      content: content,
-      regExp: query.regExp
-    });
-    this.emitFile(url, content);
-    return "module.exports = __webpack_public_path__ + " + JSON.stringify(url) + ";";
-} 
 /*
   var path = this.resourcePath;
 
@@ -88,7 +78,7 @@ module.exports = function(content) {
       regExp: query.regExp
     });
     this.emitFile(url, content);
-    const data = {uri: __webpack_public_path__ + " + JSON.stringify(url) }
+    const data = {uri: __webpack_public_path__ + JSON.stringify(url) };
     return "module.exports = " + JSON.stringify(data) + ";";
 	}
 }
