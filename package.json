@@ -20,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/cncowboy/rn-image-loader/issues"
   },
+  "dependencies": {
+    "image-size": "^0.3.5",
+    "loader-utils": "^0.2.7",
+    "mime": "1.2.x"
+  },
   "homepage": "https://github.com/cncowboy/rn-image-loader#readme"
 }
